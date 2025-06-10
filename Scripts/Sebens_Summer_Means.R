@@ -19,40 +19,42 @@ SHI <- read_csv("Outputs/SHI_Interpolation_Summer.csv")
 SHO <- read_csv("Outputs/SHO_Interpolation_Summer.csv") 
 
 DB <- DB %>%
-  rename(DB_mean = 'mean')
+  rename("DB (7m)" = 'mean')
 
 HRI <- HRI %>%
-  rename(HRI_mean = 'mean')
+  rename("HRI (20m)" = 'mean')
 
 HRO <- HRO %>%
-  rename(HRO_mean = 'mean')
+  rename("HRO (11m)" = 'mean')
 
 SHI <- SHI %>%
-  rename(SHI_mean = 'mean')
+  rename("SHI (8m)" = 'mean')
 
 SHO <- SHO %>%
-  rename(SHO_mean = 'mean')
+  rename("SHO (8m)" = 'mean')
 
 
 Summer_means7 <- (list(DB,HRI,HRO,SHI,SHO) %>% 
                             reduce(left_join)) 
 
 Summer_means <- Summer_means7 %>% 
-  mutate(Average_temp= rowMeans(select(.,DB_mean, HRI_mean, HRO_mean, SHI_mean, SHO_mean), na.rm = TRUE))
+  mutate(Average_temp= rowMeans(select(.,"DB (7m)", "HRI (20m)", "HRO (11m)", "SHI (8m)", 
+                                       "SHO (8m)"), na.rm = TRUE))
 
 View(Summer_means7)
 
 Summer_means_long <- Summer_means7 |>
-  pivot_longer(cols = !YY, names_to = "Site", values_to = "Means")
+  pivot_longer(cols = !YY, names_to = "Site", values_to = "Means") |>
+  filter(YY %in% c(1998:2022))
 
 All_means_plot <- ggplot(Summer_means_long, aes(x = YY,
                                                  y = Means,
                                                  color = Site)) +
-  geom_line()+
+  geom_line(linewidth = 1.2)+
   labs(x = "Year",
        y = "Temperature (°C)")+
   theme_set(theme_classic(base_size = 18)) +
-  ggtitle("Interpolated prediction of Summer Mean Temperature across all sites")
+  ggtitle("Summer mean temperatures across all sites")
 
 ggsave("Figures/All_means_plot.jpg")
 
