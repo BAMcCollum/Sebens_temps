@@ -7,7 +7,7 @@ library(dplyr)
 library(lubridate)
 library(tidyverse)
 library(broom)
-library(SiZer)
+
 
 ###################################################################################################################
 
@@ -34,11 +34,27 @@ SHO <- SHO %>%
   rename(SHO_mean = 'mean')
 
 
-Summer_means <- (list(DB,HRI,HRO,SHI,SHO) %>% 
+Summer_means7 <- (list(DB,HRI,HRO,SHI,SHO) %>% 
                             reduce(left_join)) 
 
-Summer_means <- Summer_means %>% 
+Summer_means <- Summer_means7 %>% 
   mutate(Average_temp= rowMeans(select(.,DB_mean, HRI_mean, HRO_mean, SHI_mean, SHO_mean), na.rm = TRUE))
+
+View(Summer_means7)
+
+Summer_means_long <- Summer_means7 |>
+  pivot_longer(cols = !YY, names_to = "Site", values_to = "Means")
+
+All_means_plot <- ggplot(Summer_means_long, aes(x = YY,
+                                                 y = Means,
+                                                 color = Site)) +
+  geom_line()+
+  labs(x = "Year",
+       y = "Temperature (°C)")+
+  theme_set(theme_classic(base_size = 18)) +
+  ggtitle("Interpolated prediction of Summer Mean Temperature across all sites")
+
+ggsave("Figures/All_means_plot.jpg")
 
 #Get total mean temp
 Summer_means4 <- Summer_means |>
@@ -113,3 +129,54 @@ Summer_means_plot <- ggplot(Summer_means,aes(x=YY,y=Average_temp)) +
   labs(y = expression(paste("Temperature", "\u00b0C")), x = expression("Date"))
 
 ggsave("Figures/Summer_means_plot.jpg")
+
+DB_means_plot <- ggplot(DB,aes(x=YY,y=DB_mean)) + 
+  geom_point() + 
+  geom_line(aes(y = DB_mean)) +
+  geom_smooth(method="lm",formula=y~x,col="red")+
+  theme_set(theme_classic(base_size = 18)) +
+  ggtitle("Interpolated prediction of Summer Mean Temperature at DB") +
+  labs(y = expression(paste("Temperature", "\u00b0C")), x = expression("Date"))
+
+ggsave("Figures/DB_means_plot.jpg")
+
+HRI_means_plot <- ggplot(HRI,aes(x=YY,y=HRI_mean)) + 
+  geom_point() + 
+  geom_line(aes(y = HRI_mean)) +
+  geom_smooth(method="lm",formula=y~x,col="red")+
+  theme_set(theme_classic(base_size = 18)) +
+  ggtitle("Interpolated prediction of Summer Mean Temperature at HRI") +
+  labs(y = expression(paste("Temperature", "\u00b0C")), x = expression("Date"))
+
+ggsave("Figures/HRI_means_plot.jpg")
+
+HRO_means_plot <- ggplot(HRO,aes(x=YY,y=HRO_mean)) + 
+  geom_point() + 
+  geom_line(aes(y = HRO_mean)) +
+  geom_smooth(method="lm",formula=y~x,col="red")+
+  theme_set(theme_classic(base_size = 18)) +
+  ggtitle("Interpolated prediction of Summer Mean Temperature at HRO") +
+  labs(y = expression(paste("Temperature", "\u00b0C")), x = expression("Date"))
+
+ggsave("Figures/HRO_means_plot.jpg")
+
+SHI_means_plot <- ggplot(SHI,aes(x=YY,y=SHI_mean)) + 
+  geom_point() + 
+  geom_line(aes(y = SHI_mean)) +
+  geom_smooth(method="lm",formula=y~x,col="red")+
+  theme_set(theme_classic(base_size = 18)) +
+  ggtitle("Interpolated prediction of Summer Mean Temperature at SHI") +
+  labs(y = expression(paste("Temperature", "\u00b0C")), x = expression("Date"))
+
+ggsave("Figures/SHI_means_plot.jpg")
+
+SHO_means_plot <- ggplot(SHO,aes(x=YY,y=SHO_mean)) + 
+  geom_point() + 
+  geom_line(aes(y = SHO_mean)) +
+  geom_smooth(method="lm",formula=y~x,col="red")+
+  theme_set(theme_classic(base_size = 18)) +
+  ggtitle("Interpolated prediction of Summer Mean Temperature at SHO") +
+  labs(y = expression(paste("Temperature", "\u00b0C")), x = expression("Date"))
+
+ggsave("Figures/SHO_means_plot.jpg")
+
