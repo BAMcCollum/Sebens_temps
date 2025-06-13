@@ -36,6 +36,7 @@ All_means_plot <- ggplot(interp_data2, aes(x = YY,
   theme_set(theme_classic(base_size = 18)) +
   ggtitle("Annual summer mean temperature across all sites")
 
+ggsave("Figures/All_means_plot.jpg")
 
 #Get total mean temp
 interp_data3 <- interp_data2 |>
