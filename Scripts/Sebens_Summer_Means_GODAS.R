@@ -9,6 +9,7 @@ library(tidyverse)
 library(broom)
 
 
+
 ###################################################################################################################
 
 interp_data <- read_csv("Outputs/godas_15_interpolated.csv")
@@ -101,14 +102,25 @@ performance::r2(model) #0.446
 slope <- coef(model)[2] #0.08C/year
 
 #Plot summer means across all sites
+
+lm_eqn <- function(df){
+  m <- lm(Average_temp ~YY, data = Summer_means);
+  eq <- substitute(italic(y) == a + b %.% italic(x)*","~~italic(r)^2~"="~r2, 
+                   list(a = format(unname(coef(m)[1]), digits = 2),
+                        b = format(unname(coef(m)[2]), digits = 2),
+                        r2 = format(summary(m)$r.squared, digits = 3)))
+  as.character(as.expression(eq));
+}
+
 Summer_means_plot <- ggplot(Summer_means,aes(x=YY,y=Average_temp)) + 
   geom_point() + 
   geom_line(aes(y = Average_temp)) +
   geom_smooth(method="lm",formula=y~x,col="red")+
   theme_set(theme_classic(base_size = 18)) +
+  annotate("text", x = 1985, y = 15.5, label = lm_eqn(Summer_means), parse = TRUE)+
   ggtitle("Interpolated summer mean temperature across all sites") +
   labs(y = expression(paste("Temperature", "\u00b0C")), x = expression("Date"))
-
+  
 ggsave("Figures/Summer_means_plot.jpg")
 
 #Plot summer means across all sites with line showing Pre and Post 2015 (Pershing) means
@@ -119,6 +131,7 @@ Summer_means_Pershing_plot <- ggplot(Summer_means,aes(x=YY,y=Average_temp)) +
   geom_hline(yintercept = 11.29038, col = "purple")+
   geom_hline(yintercept = 14.06974, col = "turquoise")+
   theme_set(theme_classic(base_size = 18)) +
+  annotate("text", x = 1985, y = 15.5, label = lm_eqn(Summer_means), parse = TRUE)+
   ggtitle("Interpolated summer mean temperature across all sites") +
   labs(y = expression(paste("Temperature", "\u00b0C")), x = expression("Date"))
 
