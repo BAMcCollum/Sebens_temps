@@ -44,55 +44,37 @@ ggsave("Figures/All_means_plot.jpg")
 
 #Get total mean temp
 interp_data3 <- interp_data2 |>
-  filter(YY %in% c(1982:2022))|>
+  filter(YY %in% c(1980:2022))|>
   group_by(YY)|>
   summarize(Average_temp = mean(mean))
 
 total_mean <- mean(interp_data3$Average_temp)
-print(total_mean) #11.65504
+print(total_mean) #11.66569
 
-#Get 1980-2000 mean temp
+#Get Old and New temp means
 interp_data4 <- interp_data2 |>
-  filter(YY %in% c(1980:2000))|>
+  filter(YY %in% c(1980:1985))|>
   group_by(YY)|>
   summarize(Average_temp = mean(mean))
 
 old_mean <- mean(interp_data4$Average_temp)
-print(old_mean) #10.97074
+print(old_mean) #10.71873
 
-#Get 2000-2020 mean temp 
 interp_data5 <- interp_data2 |>
-  filter(YY %in% c(2000:2020))|>
-  group_by(YY)|>
-  summarize(Average_temp = mean(mean))
-
-new_mean <- mean(interp_data5$Average_temp)
-print(new_mean) #12.43377
-
-#Get Pre and Post 2015 means
-interp_data6 <- interp_data2 |>
-  filter(YY %in% c(1980:2015))|>
-  group_by(YY)|>
-  summarize(Average_temp = mean(mean))
-
-Pershing_old_mean <- mean(interp_data6$Average_temp)
-print(Pershing_old_mean) #11.29038
-
-interp_data7 <- interp_data2 |>
   filter(YY %in% c(2015:2020))|>
   group_by(YY)|>
   summarize(Average_temp = mean(mean))
 
-Pershing_new_mean <- mean(interp_data7$Average_temp)
-print(Pershing_new_mean) #14.06974
+new_mean <- mean(interp_data5$Average_temp)
+print(new_mean) #14.06974
 
 #Get summer mean across sites
-interp_data8 <- interp_data2 |>
+interp_data6 <- interp_data2 |>
   pivot_wider(names_from = tidbit, values_from = mean)
 
-View(interp_data8)
+View(interp_data6)
 
-Summer_means <- interp_data8 %>% 
+Summer_means <- interp_data6 %>% 
   mutate(Average_temp= rowMeans(select(.,"DB (7m)", "HRI (20m)", "HRO (11m)", "SHI (8m)", 
                                        "SHO (8m)"), na.rm = TRUE))
 View(Summer_means)
@@ -123,16 +105,16 @@ Summer_means_plot <- ggplot(Summer_means,aes(x=YY,y=Average_temp)) +
   
 ggsave("Figures/Summer_means_plot.jpg")
 
-#Plot summer means across all sites with line showing Pre and Post 2015 (Pershing) means
-Summer_means_Pershing_plot <- ggplot(Summer_means,aes(x=YY,y=Average_temp)) + 
+#Plot summer means across all sites with line showing Old and New means
+Summer_means_tipping_point_plot <- ggplot(Summer_means,aes(x=YY,y=Average_temp)) + 
   geom_point() + 
   geom_line(aes(y = Average_temp)) +
   geom_smooth(method="lm",formula=y~x,col="red")+
-  geom_hline(yintercept = 11.29038, col = "purple")+
+  geom_hline(yintercept = 10.71873, col = "purple")+
   geom_hline(yintercept = 14.06974, col = "turquoise")+
   theme_set(theme_classic(base_size = 18)) +
   annotate("text", x = 1985, y = 15.5, label = lm_eqn(Summer_means), parse = TRUE)+
   ggtitle("Interpolated summer mean temperature across all sites") +
   labs(y = expression(paste("Temperature", "\u00b0C")), x = expression("Date"))
 
-ggsave("Figures/Summer_means_Pershing_plot.jpg")
+ggsave("Figures/Summer_means_tipping_point_plot.jpg")
