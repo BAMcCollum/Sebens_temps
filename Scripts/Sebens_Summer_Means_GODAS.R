@@ -99,7 +99,7 @@ Summer_means_plot <- ggplot(Summer_means,aes(x=YY,y=Average_temp)) +
   geom_line(aes(y = Average_temp)) +
   geom_smooth(method="lm",formula=y~x,col="red")+
   theme_set(theme_classic(base_size = 18)) +
-  annotate("text", x = 1985, y = 15.5, label = lm_eqn(Summer_means), parse = TRUE)+
+  #annotate("text", x = 1985, y = 15.5, label = lm_eqn(Summer_means), parse = TRUE)+
   ggtitle("Interpolated summer mean temperature across all sites") +
   labs(y = expression(paste("Temperature", "\u00b0C")), x = expression("Date"))
   
@@ -113,7 +113,7 @@ Summer_means_tipping_point_plot <- ggplot(Summer_means,aes(x=YY,y=Average_temp))
   geom_hline(yintercept = 10.71873, col = "purple")+
   geom_hline(yintercept = 14.06974, col = "turquoise")+
   theme_set(theme_classic(base_size = 18)) +
-  annotate("text", x = 1985, y = 15.5, label = lm_eqn(Summer_means), parse = TRUE)+
+  #annotate("text", x = 1985, y = 15.5, label = lm_eqn(Summer_means), parse = TRUE)+
   ggtitle("Interpolated summer mean temperature across all sites") +
   labs(y = expression(paste("Temperature", "\u00b0C")), x = expression("Date"))
 
