@@ -94,10 +94,12 @@ lm_eqn <- function(df){
   as.character(as.expression(eq));
 }
 
+lm_eqn(Summer_means)
+
 Summer_means_plot <- ggplot(Summer_means,aes(x=YY,y=Average_temp)) + 
-  geom_point() + 
+  geom_point(size=3) + 
   geom_line(aes(y = Average_temp)) +
-  geom_smooth(method="lm",formula=y~x,col="red")+
+  geom_smooth(method="lm",formula=y~x,col="red", linewidth = 2)+
   theme_set(theme_classic(base_size = 18)) +
   #annotate("text", x = 1985, y = 15.5, label = lm_eqn(Summer_means), parse = TRUE)+
   ggtitle("Interpolated summer mean temperature across all sites") +
@@ -107,9 +109,9 @@ ggsave("Figures/Summer_means_plot.jpg")
 
 #Plot summer means across all sites with line showing Old and New means
 Summer_means_tipping_point_plot <- ggplot(Summer_means,aes(x=YY,y=Average_temp)) + 
-  geom_point() + 
+  geom_point(size=3) + 
   geom_line(aes(y = Average_temp)) +
-  geom_smooth(method="lm",formula=y~x,col="red")+
+  geom_smooth(method="lm",formula=y~x,col="red", linewidth = 2)+
   geom_hline(yintercept = 10.71873, col = "purple")+
   geom_hline(yintercept = 14.06974, col = "turquoise")+
   theme_set(theme_classic(base_size = 18)) +
