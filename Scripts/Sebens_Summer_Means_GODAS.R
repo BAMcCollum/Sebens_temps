@@ -116,7 +116,7 @@ Summer_means_tipping_point_plot <- ggplot(Summer_means,aes(x=YY,y=Average_temp))
                colour = "purple", linewidth = 4)+
   geom_segment(x = 2015, y = 14.07, xend = 2020, yend = 14.07, 
                colour = "turquoise", linewidth = 4)+
-  theme_set(theme_classic(base_size = 18)) +
+  theme_classic(base_size = 24) +
   #annotate("text", x = 1985, y = 15.5, label = lm_eqn(Summer_means), parse = TRUE)+
   ggtitle("Interpolated summer mean temperature across all sites") +
   labs(y = expression(paste("Temperature", "\u00b0C")), x = expression("Date"))
