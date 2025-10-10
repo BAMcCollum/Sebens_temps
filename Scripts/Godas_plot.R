@@ -22,5 +22,6 @@ ggplot(transform(godas_monthly_long,
   scale_colour_manual(values=cbbPalette)+
   theme_bw(base_size = 20)+
   geom_line(show.legend = FALSE)+
+  labs(y = expression(paste("Temperature", "\u00b0C")))+
   facet_wrap(~Depth)
 ggsave("Figures/godas_all_years_plot.jpg")  
