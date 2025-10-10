@@ -20,7 +20,7 @@ ggplot(transform(godas_monthly_long,
                  Depth=factor(Depth,levels=c("godas_5","godas_15","godas_25"))),
        aes(x = Date, y = Temperature, color = Depth)) +
   scale_colour_manual(values=cbbPalette)+
-  theme_bw()+
+  theme_bw(base_size = 20)+
   geom_line(show.legend = FALSE)+
   facet_wrap(~Depth)
 ggsave("Figures/godas_all_years_plot.jpg")  
