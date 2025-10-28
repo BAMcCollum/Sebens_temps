@@ -76,6 +76,7 @@ ggplot(transform(godas_means,
                  Depth=factor(Depth,levels=c("godas_5","godas_15","godas_25"))),
        aes(x = YY, y = mean, color = Depth)) +
   scale_colour_manual(values=cbbPalette)+
+  stat_smooth(method="lm")+
   theme_bw(base_size = 20)+
   geom_line(show.legend = FALSE)+
   labs(y = expression(paste("Temperature", "\u00b0C")), x = expression(paste("Year")))+
@@ -86,6 +87,9 @@ ggsave("Figures/godas_summer_means_plot.jpg")
 Temp_by_depth_and_yearlm <- lm(mean ~ Depth*YY,
                                data = godas_means)
 
+##
+# check model assumptions
+##
 check_model(Temp_by_depth_and_yearlm)
 
 
@@ -98,4 +102,44 @@ contrast(temp_means_em, method = "pairwise") |>
   confint()
 
 car::Anova(Temp_by_depth_and_yearlm) 
-emtrends(Temp_by_depth_and_yearlm, ~Depth, "YY")
+
+emtrends(Temp_by_depth_and_yearlm, ~Depth, "YY") |> plot() +
+  geom_vline(xintercept = 0, lty = 2)
+
+
+check_model(mod_bdmean_min)
+# looks good!
+
+##
+# Omnibus test
+##
+Anova(mod_bdmean_min)
+
+##
+# difference in slopes
+##
+emtrends(mod_bdmean_min, 
+         specs =~ depth,
+         var = "BO21_tempmax_bdmin_mean") |> plot() +
+  geom_vline(xintercept = 0, lty = 2)
+
+emtrends(mod_bdmean_min, 
+         specs =~ depth,
+         var = "BO21_tempmax_bdmin_mean") |>
+  contrast(method = "pairwise",
+           p.adjust = "none") |>
+  tidy() |>
+  select(-term, -null.value) |>
+  mutate(across(where(is.numeric), round, 3)) |>
+  gt::gt()|>
+  gtsave("tables/depth_temp_slope_comparison.docx")
+
+#make a better looking table
+gt::gt(Anova(Temp_by_depth_and_yearlm))|> 
+  gtsave("tables/temp_change_by_depth.docx")
+
+modelbased::estimate_relation(Temp_by_depth_and_yearlm, by = c("YY", "Depth")) |> plot()
+
+modelbased::estimate_relation(Temp_by_depth_and_yearlm, by = c("YY", "Depth")) |> plot() +
+  scale_colour_manual(values=cbbPalette)+ 
+  facet_wrap(~Depth)
