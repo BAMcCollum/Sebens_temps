@@ -14,6 +14,7 @@ library(emmeans)
 library(GGally)
 library(visreg)
 library(piecewiseSEM)
+library(gt)
 #filter data to just show summer months
 godas <- read_csv("Outputs/godas_allyears_5_15_25m.csv") |> 
   filter(MM %in% 7:9,
@@ -83,7 +84,9 @@ ggplot(transform(godas_means,
   facet_wrap(~Depth)
 ggsave("Figures/godas_summer_means_plot.jpg")  
 
-
+##
+# model
+##
 Temp_by_depth_and_yearlm <- lm(mean ~ Depth*YY,
                                data = godas_means)
 
@@ -106,40 +109,13 @@ car::Anova(Temp_by_depth_and_yearlm)
 emtrends(Temp_by_depth_and_yearlm, ~Depth, "YY") |> plot() +
   geom_vline(xintercept = 0, lty = 2)
 
-
-check_model(mod_bdmean_min)
-# looks good!
-
-##
-# Omnibus test
-##
-Anova(mod_bdmean_min)
-
-##
-# difference in slopes
-##
-emtrends(mod_bdmean_min, 
-         specs =~ depth,
-         var = "BO21_tempmax_bdmin_mean") |> plot() +
-  geom_vline(xintercept = 0, lty = 2)
-
-emtrends(mod_bdmean_min, 
-         specs =~ depth,
-         var = "BO21_tempmax_bdmin_mean") |>
-  contrast(method = "pairwise",
-           p.adjust = "none") |>
-  tidy() |>
-  select(-term, -null.value) |>
-  mutate(across(where(is.numeric), round, 3)) |>
-  gt::gt()|>
-  gtsave("tables/depth_temp_slope_comparison.docx")
-
 #make a better looking table
-gt::gt(Anova(Temp_by_depth_and_yearlm))|> 
+gt::gt(Anova(Temp_by_depth_and_yearlm)) |> 
   gtsave("tables/temp_change_by_depth.docx")
 
 modelbased::estimate_relation(Temp_by_depth_and_yearlm, by = c("YY", "Depth")) |> plot()
 
-modelbased::estimate_relation(Temp_by_depth_and_yearlm, by = c("YY", "Depth")) |> plot() +
+modelbased::estimate_relation(Temp_by_depth_and_yearlm, by = c("YY", "Depth")) |> 
+  plot() +
   scale_colour_manual(values=cbbPalette)+ 
   facet_wrap(~Depth)
