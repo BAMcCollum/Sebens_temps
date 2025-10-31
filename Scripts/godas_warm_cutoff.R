@@ -100,6 +100,7 @@ check_model(Temp_by_depth_and_yearlm, check = "linearity") |> plot()
 
 tidy(Temp_by_depth_and_yearlm)
 temp_means_em <- emmeans(Temp_by_depth_and_yearlm,  ~Depth)
+temp_means_em2 <- emmeans(Temp_by_depth_and_yearlm, ~YY)
 
 contrast(temp_means_em, method = "pairwise") |>
   confint()
@@ -119,3 +120,9 @@ modelbased::estimate_relation(Temp_by_depth_and_yearlm, by = c("YY", "Depth")) |
   plot() +
   scale_colour_manual(values=cbbPalette)+ 
   facet_wrap(~Depth)
+
+emmeans(Temp_by_depth_and_yearlm, ~YY|Depth, at = c(list(YY = c(1989, 2023))))
+emmeans(Temp_by_depth_and_yearlm, ~Depth|YY, at = c(list(YY = c(1989, 2023))))  |> 
+                                                      contrast(method = "pairwise", adjust = "none")
+emmeans(Temp_by_depth_and_yearlm, ~Depth+YY, at = c(list(YY = c(1989, 2023))))  |> 
+  contrast(method = "pairwise", adjust = "none")
