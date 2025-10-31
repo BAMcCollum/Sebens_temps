@@ -60,11 +60,14 @@ ggplot(godas_monthly_long, aes(x = Date, y = Temperature, color = Depth)) +
 
 cbbPalette <- c("#E69F00", "#009E73", "#56B4E9")
 
+depth_color_scale <- function(...) scale_color_manual(values = c("chartreuse4","sienna1","darkorchid4"), ...)
+depth_fill_scale <- function(...) scale_fill_manual(values = c("chartreuse4","sienna1","darkorchid4"), ...)
+
 #plot by depth
 ggplot(transform(godas_monthly_long,
                  Depth=factor(Depth,levels=c("godas_5","godas_15","godas_25"))),
        aes(x = Date, y = Temperature, color = Depth)) +
-  scale_colour_manual(values=cbbPalette)+
+  depth_color_scale() +
   theme_bw(base_size = 20)+
   geom_line(show.legend = FALSE)+
   labs(y = expression(paste("Temperature", "\u00b0C")))+
@@ -76,7 +79,7 @@ ggsave("Figures/godas_all_years_summer_plot.jpg")
 ggplot(transform(godas_means,
                  Depth=factor(Depth,levels=c("godas_5","godas_15","godas_25"))),
        aes(x = YY, y = mean, color = Depth)) +
-  scale_colour_manual(values=cbbPalette)+
+  depth_color_scale() +
   stat_smooth(method="lm")+
   theme_bw(base_size = 20)+
   geom_line(show.legend = FALSE)+
@@ -99,6 +102,7 @@ check_model(Temp_by_depth_and_yearlm)
 check_model(Temp_by_depth_and_yearlm, check = "linearity") |> plot()
 
 tidy(Temp_by_depth_and_yearlm)
+
 temp_means_em <- emmeans(Temp_by_depth_and_yearlm,  ~Depth)
 temp_means_em2 <- emmeans(Temp_by_depth_and_yearlm, ~YY)
 
@@ -111,14 +115,17 @@ emtrends(Temp_by_depth_and_yearlm, ~Depth, "YY") |> plot() +
   geom_vline(xintercept = 0, lty = 2)
 
 #make a better looking table
-gt::gt(Anova(Temp_by_depth_and_yearlm)) |> 
+gt::gt(Anova(Temp_by_depth_and_yearlm))# |> 
   gtsave("tables/temp_change_by_depth.docx")
 
-modelbased::estimate_relation(Temp_by_depth_and_yearlm, by = c("YY", "Depth")) |> plot()
+modelbased::estimate_relation(Temp_by_depth_and_yearlm, by = c("YY", "Depth")) |> plot() +
+  depth_color_scale() +
+  depth_fill_scale() 
 
 modelbased::estimate_relation(Temp_by_depth_and_yearlm, by = c("YY", "Depth")) |> 
   plot() +
-  scale_colour_manual(values=cbbPalette)+ 
+  depth_color_scale() +
+  depth_fill_scale() +
   facet_wrap(~Depth)
 
 emmeans(Temp_by_depth_and_yearlm, ~YY|Depth, at = c(list(YY = c(1989, 2023))))
@@ -126,3 +133,7 @@ emmeans(Temp_by_depth_and_yearlm, ~Depth|YY, at = c(list(YY = c(1989, 2023))))  
                                                       contrast(method = "pairwise", adjust = "none")
 emmeans(Temp_by_depth_and_yearlm, ~Depth+YY, at = c(list(YY = c(1989, 2023))))  |> 
   contrast(method = "pairwise", adjust = "none")
+
+emtrends(Temp_by_depth_and_yearlm, ~Depth, "YY") |>
+  contrast(method = "pairwise", adjust = "none")
+  
